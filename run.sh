@@ -16,8 +16,8 @@ run-server() {
 lay-eggs core
 lay-eggs parse_json
 lay-eggs render_json
-lay-eggs parse_yaml
-lay-eggs render_yaml
+lay-eggs render_standard
+lay-eggs render_classdiag
 # ...
 # don't forget to add the same commands in ./pyvenv.ps1
 

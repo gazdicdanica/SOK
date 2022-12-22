@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="render_json",
+    name="render_classdiag",
     version="0.1",
     packages=find_packages(),
     # requiring Django later than 2.1

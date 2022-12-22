@@ -20,7 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
     path('parse_json', include('parse_json.urls')),
-    path('render_json', include('render_json.urls')),
     path('parse_yaml', include('parse_yaml.urls')),
-    path('render_yaml', include('render_yaml.urls')),
+    path('render_standard', include('render_standard.urls')),
+    path('render_classdiag', include('render_classdiag.urls')),
 ]
