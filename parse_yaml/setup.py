@@ -4,7 +4,7 @@ setup(
     name="parse_yaml",
     version="0.1",
     packages=find_packages(),
-    namespace_packages=['core', 'core.services'],
+    namespace_packages=['core.services'],
     # requiring Django later than 2.1
     install_requires=['Django>=2.1'],
     # Installing package data related to packge

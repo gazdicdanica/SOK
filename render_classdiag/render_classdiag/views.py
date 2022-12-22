@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from core.services.render_classdiag import RendererClassDiagram
 
 def index(request):
-    return HttpResponse("Hello from render_classdiag")
+    return HttpResponse(f"Hello from {RendererClassDiagram().name()}")

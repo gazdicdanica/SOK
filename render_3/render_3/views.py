@@ -1,5 +1,6 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from core.services.render3 import Renderer3
+
 
 def index(request):
-    return HttpResponse("Hello from render_3")
+    return HttpResponse(f"Hello from {Renderer3().name()}")

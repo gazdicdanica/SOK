@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class DataParserBase(ABC):
+class GraphRenderBase(ABC):
     @abstractmethod
     def identifier(self) -> str:
         pass

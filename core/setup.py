@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     # requiring Django later than 2.1
     install_requires=['Django>=2.1'],
-    namespace_packages=['core', 'core.services'],
+    namespace_packages=['core.services'],
     provides=['core.services.parse', 'core.services.render'],
     # Installing package data related to packge
     # https://docs.python.org/3/distutils/setupscript.html#installing-package-data

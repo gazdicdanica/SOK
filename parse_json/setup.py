@@ -4,7 +4,7 @@ setup(
     name="parse_json",
     version="0.1",
     packages=find_packages(),
-    namespace_packages=['core', 'core.services'],
+    namespace_packages=['core.services'],
     # requiring Django later than 2.1
     install_requires=['Django>=2.1'],
     # Installing package data related to packge
@@ -14,8 +14,7 @@ setup(
     # https://docs.python.org/3/distutils/setupscript.html#installing-additional-files
     entry_points={
         'kenigsberg.parse': ['ep_parse_json=core.services.parse_json:JSONParser'],
-    },
-    
+    },  
     package_data={'core': ['templates/*.html']},
     zip_safe=False
 )
