@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'parse_json.apps.ParseJsonConfig',
     'render_json.apps.RenderJsonConfig',
+    'parse_yaml.apps.ParseYamlConfig',
+    'render_yaml.apps.RenderYamlConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',
