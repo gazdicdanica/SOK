@@ -32,5 +32,6 @@ Purge-Eggs core
 # Purge-Eggs plugin1
 # Purge-Eggs plugin2
 # ...
+# don't forget to add the same commands in ./pyvenv.sh
 
 Remove-Database
