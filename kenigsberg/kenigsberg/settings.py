@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'parse_json.apps.ParseJsonConfig',
+    'render_json.apps.RenderJsonConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',

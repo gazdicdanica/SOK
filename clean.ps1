@@ -30,7 +30,7 @@ function Remove-Database {
 
 Purge-Eggs core
 Purge-Eggs parse_json
-# Purge-Eggs plugin2
+Purge-Eggs render_json
 # ...
 # don't forget to add the same commands in ./pyvenv.sh
 

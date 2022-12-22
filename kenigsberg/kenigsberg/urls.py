@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
     path('parse_json', include('parse_json.urls')),
+    path('render_json', include('render_json.urls')),
 ]

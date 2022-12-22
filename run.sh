@@ -15,7 +15,7 @@ run-server() {
 
 lay-eggs core
 lay-eggs parse_json
-# lay-eggs plugin2
+lay-eggs render_json
 # ...
 # don't forget to add the same commands in ./pyvenv.ps1
 

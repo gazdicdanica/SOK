@@ -20,7 +20,7 @@ function Run-Server {
 
 Lay-Eggs core
 Lay-Eggs parse_json
-# Lay-Eggs plugin2
+Lay-Eggs render_json
 # ...
 # don't forget to add the same commands in ./pyvenv.sh
 
