@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from core.services.render_standard import RendererStandard
 
 def index(request):
-    return HttpResponse("Hello from render_standard")
+    return HttpResponse(f"Hello from {RendererStandard().name()}")
