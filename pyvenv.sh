@@ -4,16 +4,20 @@
 # Set up a Python virtual environment and install all dependencies. 
 #
 
-start-venv() {
+# Make sure to run it as 'source ./pyvenv.sh' so that the shell you're
+# using switches to the venv that was just created!
+
+start_venv() {
+    rm -rf venv
     python -m venv venv
-    venv/Scripts/activate
+    source venv/Scripts/activate
 
     python -m pip install --upgrade pip
-    pip install Django
-    pip install pyYAML
+    python -m pip install Django
+    python -m pip install pyYAML
     # Don't forget to add the same dependency in ./pyvenv.ps1
 
-    pip list 
+    python -m pip list 
 }
 
-start-venv
+start_venv

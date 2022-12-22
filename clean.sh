@@ -2,7 +2,7 @@
 # Remove all garbage produced by Django and each of the components upon installation. 
 #
 
-purge-eggs() {
+purge_eggs() {
     cd $1
 
     rm -rf build/
@@ -12,19 +12,19 @@ purge-eggs() {
     cd ..
 }
 
-remove-database() {
+remove_database() {
     cd kenigsberg
     rm -rf *.sqlite3
     cd ..
 }
 
-purge-eggs core
-purge-eggs parse_json
-purge-eggs parse_yaml
-purge-eggs render_standard
-purge-eggs render_classdiag
-purge-eggs render_3
+purge_eggs core
+purge_eggs parse_json
+purge_eggs parse_yaml
+purge_eggs render_standard
+purge_eggs render_classdiag
+purge_eggs render_3
 # ...
 # don't forget to add the same commands in ./pyvenv.ps1
 
-remove-database
+remove_database

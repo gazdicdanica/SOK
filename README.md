@@ -19,3 +19,4 @@ Team 06:
 6) If needed, run `clean` to remove residue files.
 
 `pyvenv`, `run` and `clean` can be run in `bash` or `powershell` with the appropriate scripts for each.
+If you're using bash, then write `source ./pyvenv` to keep your shell in the virtual environment.
