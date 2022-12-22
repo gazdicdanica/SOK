@@ -19,7 +19,7 @@ remove-database() {
 }
 
 purge-eggs core
-# purge-eggs plugin1
+purge-eggs parse_json
 # purge-eggs plugin2
 # ...
 # don't forget to add the same commands in ./pyvenv.ps1
