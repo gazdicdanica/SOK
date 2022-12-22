@@ -19,8 +19,8 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
-    path('parse_json', include('parse_json.urls')),
-    path('parse_yaml', include('parse_yaml.urls')),
+    #path('parse_json', include('parse_json.urls')),
+    #path('parse_yaml', include('parse_yaml.urls')),
     path('render_standard', include('render_standard.urls')),
     path('render_classdiag', include('render_classdiag.urls')),
     path('render_3', include('render_3.urls')),

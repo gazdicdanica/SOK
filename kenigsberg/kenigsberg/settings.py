@@ -32,8 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'core.apps.CoreConfig',
-    'parse_json.apps.ParseJsonConfig',
-    'parse_yaml.apps.ParseYamlConfig',
+    #'parse_json.apps.ParseJsonConfig',
+    #'parse_yaml.apps.ParseYamlConfig',
     'render_standard.apps.RenderStandardConfig',
     'render_classdiag.apps.RenderClassDiagConfig',
     'render_3.apps.Render3Config',
