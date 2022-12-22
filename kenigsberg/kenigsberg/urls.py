@@ -23,4 +23,5 @@ urlpatterns = [
     path('parse_yaml', include('parse_yaml.urls')),
     path('render_standard', include('render_standard.urls')),
     path('render_classdiag', include('render_classdiag.urls')),
+    path('render_3', include('render_3.urls')),
 ]

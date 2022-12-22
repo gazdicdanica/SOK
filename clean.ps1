@@ -33,6 +33,7 @@ Purge-Eggs parse_json
 Purge-Eggs parse_yaml
 Purge-Eggs render_standard
 Purge-Eggs render_classdiag
+Purge-Eggs render_3
 # ...
 # don't forget to add the same commands in ./pyvenv.sh
 

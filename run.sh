@@ -18,6 +18,7 @@ lay-eggs parse_json
 lay-eggs render_json
 lay-eggs render_standard
 lay-eggs render_classdiag
+lay-eggs render_3
 # ...
 # don't forget to add the same commands in ./pyvenv.ps1
 

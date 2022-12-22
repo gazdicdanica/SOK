@@ -23,6 +23,7 @@ purge-eggs parse_json
 purge-eggs parse_yaml
 purge-eggs render_standard
 purge-eggs render_classdiag
+purge-eggs render_3
 # ...
 # don't forget to add the same commands in ./pyvenv.ps1
 

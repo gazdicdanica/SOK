@@ -23,6 +23,7 @@ Lay-Eggs parse_json
 Lay-Eggs parse_yaml
 Lay-Eggs render_standard
 Lay-Eggs render_classdiag
+Lay-Eggs render_3
 # ...
 # don't forget to add the same commands in ./pyvenv.sh
 
