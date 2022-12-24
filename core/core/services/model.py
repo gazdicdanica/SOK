@@ -137,7 +137,7 @@ class Graph:
         self._nodes = []
         self._edges = []
 
-    def search(self, query: str) -> List[Tuple[Node, List[str]]]:
+    def search(self, query: str) -> "Graph":
         """
             Desc:
                 Perform search under the whole graph.
@@ -146,12 +146,9 @@ class Graph:
                 query: str - the text query to search for.
 
             Returns:
-                A list of tuples (Node, List[str]) whose first element is
-                a node which satisfies the search, and the second element
-                is a list of attributes of that node whose values match
-                the search query.
-
-                It's guaranteed that for some tuple (node, li), li is NOT empty. 
+                A subgraph (Graph) whose elements are
+                nodes which satisfy the search with given
+                search query.
         """
 
         # TODO: Implementation needed.
