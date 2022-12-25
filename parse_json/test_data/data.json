@@ -1,0 +1,58 @@
+{
+    "name": "ROOT",
+    "data":[
+        {
+            "id":"1",
+            "name":"cvor1",
+            "miniNodes":[
+                {
+                    "id":"5",
+                    "timestamp": "12:40:34",
+                    "name":"miniCvor1",
+                    "referenceList":["1","6", "7"]
+                }
+            ]
+        },
+        {
+            "id":"2",
+            "name":"cvor2"
+        },
+        {
+            "id":"3",
+            "name":"cvor3",
+            "miniNodes":[
+                {
+                    "id":"6",
+                    "date": "01-01-2000",
+                    "name":"miniCvor2",
+                    "referenceList":["4"],
+                    "randomInfo": ["info1", "info2"]
+                },
+                {
+                    "id":"7",
+                    "name":"miniCvor3",
+                    "timestamp": "10:30:10",
+                    "miniMiniNodes":[
+                        {
+                            "id":"9",
+                            "name":"miniMiniCvor1",
+                            "referenceList":["3"]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id":"4",
+            "name":"cvor4",
+            "date": "01-01-2001",
+            "miniNodes":[
+                {
+                    "id":"8",
+                    "name":"miniCvor4",
+                    "referenceList":["1", "3"]
+                }
+            ]
+        }
+    ]
+}
