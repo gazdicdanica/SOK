@@ -4,8 +4,9 @@ from operator import lt, le, gt, ge, eq, ne
 ATTR_ID = "__id"
 ATTR_REF = "__ref"
 
+
 class Attributable(object):
-    def __int__(self):
+    def __init__(self):
         self._attr = {}
 
     @property
@@ -55,8 +56,7 @@ class Attributable(object):
                 A list of attribute names of this node whose values satisfy the search.
                 or an empty list if none found.
         """
-        substring = lambda x, y: y in x
-        return [attr_name for attr_name in self.attr if query in str(self.get_attr(attr_name))]
+        return [attr_name for attr_name in self.attr if query.lower() in str(self.get_attr(attr_name)).lower()]
 
     def query_check(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> bool:
         """
@@ -124,6 +124,9 @@ class Graph:
     def add_node(self, v: Node):
         self._nodes.append(v)
 
+    def add_edge(self, e: Edge):
+        self._edges.append(e)
+
     def search(self, query: str) -> "Graph":
         """
             Desc:
@@ -148,11 +151,11 @@ class Graph:
 
         qualifying_edges = list()
         for edge in self._edges:
-            if len(edge.search(query)) != 0 and (edge.node_to in qualifying_nodes) and (edge.node_from in qualifying_nodes):
+            if len(edge.search(query)) != 0 and (edge.node_to in qualifying_nodes) and (
+                    edge.node_from in qualifying_nodes):
                 qualifying_edges.append(edge)
 
         return Graph(qualifying_nodes, qualifying_edges)
-
 
     def filter(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> "Graph":
         """
@@ -179,7 +182,7 @@ class Graph:
         # TODO: Implementation needed.
 
         return Graph()
-    
+
     @property
     def nodes(self) -> List[Node]:
         return self._nodes
@@ -195,18 +198,3 @@ class Graph:
     @edges.setter
     def edges(self, newval: List[Edge]):
         self._edges = newval
-
-
-if __name__ == '__main__':
-    a = Node()
-    a["name"] = "Perica"
-    b = Node()
-    b["name"] = "Pera"
-
-    e = Edge(a, b)
-
-    vertices = [a, b]
-    edges = [e]
-    g = Graph(vertices, edges)
-    sg = g.search("Per")
-    print(sg)
