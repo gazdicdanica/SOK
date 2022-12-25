@@ -1,8 +1,10 @@
+import operator
 from typing import List, Dict, Any, Callable, Tuple
 from operator import lt, le, gt, ge, eq, ne
 
 ATTR_ID = "__id"
 ATTR_REF = "__ref"
+
 
 class Node:
     def __init__(self):
@@ -69,11 +71,11 @@ class Node:
             Throws:
                 NotImplementedError if the type of `val` isn't supported.
         """
+        try:
+            return operator(self.get_attr(attr_name), type(self.get_attr(attr_name))(val))
+        except:
+            raise NotImplementedError("value type not supported")
 
-        # TODO: Needs implementation
-        # TODO: Manual conversion after get_attr (int, float, bool, str)
-        # TODO: return operator(my value, val converted)
-        return False
 
 class Edge:
     def __init__(self, node1: Node, node2: Node):
@@ -105,6 +107,18 @@ class Edge:
     def node_to(self, newval: Node):
         self._node_to = newval
 
+    def get_attr(self, attr_name: str) -> Any:
+        """
+            Desc:
+                Returns the attribute of this node.
+                Shorthand for attr[attr_name].
+
+            Note:
+                This function does not perform an existence check.
+                on the specified attribute.
+        """
+        return self.attr[attr_name]
+
     def query_check(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> bool:
         """
             Desc:
@@ -124,8 +138,10 @@ class Edge:
                 NotImplementedError if the type of `val` isn't supported (see query_check).
         """
 
-        # TODO: Needs implementation
-        return False
+        try:
+            return operator(self.get_attr(attr_name), type(self.get_attr(attr_name))(val))
+        except:
+            raise NotImplementedError("value type not supported")
 
 
 class Graph:
@@ -176,11 +192,28 @@ class Graph:
             Throws:
                 NotImplementedError if the type of `val` isn't supported (see query_check).       
         """
+        passed_vertices = []
+        passed_edges = []
 
-        # TODO: Implementation needed.
+        if len(self._nodes) == 0:
+            raise Exception("Graph is empty")
 
-        return Graph()
-    
+        for vertex in self._nodes:
+            vertex.query_check(attr_name, val, operator)
+            if operator(type(val)(vertex.get_attr(attr_name)), val):
+                passed_vertices.append(vertex)
+
+        if len(passed_vertices) == 0:
+            raise Exception("Graph is empty")
+
+        for edge in self._edges:
+            edge.query_check(attr_name, val, operator)
+            if operator(type(val)(edge.get_attr(attr_name)), val):
+                if edge.node_to in passed_vertices and edge.node_from in passed_vertices:
+                    passed_edges.append(edge)
+
+        return Graph(passed_vertices, passed_edges)
+
     @property
     def nodes(self) -> List[Node]:
         return self._nodes
