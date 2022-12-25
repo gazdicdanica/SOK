@@ -4,8 +4,8 @@ from operator import lt, le, gt, ge, eq, ne
 ATTR_ID = "__id"
 ATTR_REF = "__ref"
 
-class Node:
-    def __init__(self):
+class Attributable(object):
+    def __int__(self):
         self._attr = {}
 
     @property
@@ -16,6 +16,9 @@ class Node:
     def attr(self, newval: Dict):
         self._attr = newval
 
+    def set_attr(self, attr_name: str, val: Any):
+        self._attr[attr_name] = val
+
     def has_attr(self, attr_name: str) -> bool:
         return attr_name in self.attr
 
@@ -24,18 +27,24 @@ class Node:
             Desc:
                 Returns the attribute of this node.
                 Shorthand for attr[attr_name].
-                
+
             Note:
                 This function does not perform an existence check.
                 on the specified attribute.
         """
-        return self.attr[attr_name]
+        return self.attr.get(attr_name)
+
+    def __getitem__(self, key):
+        return self._attr.get(key)
+
+    def __setitem__(self, key, value):
+        self._attr[key] = value
 
     def search(self, query: str) -> List[str]:
         """
             Desc:
                 Perform text search on this node.
-            
+
             Note:
                 Searching should be done with substrings.
 
@@ -46,9 +55,8 @@ class Node:
                 A list of attribute names of this node whose values satisfy the search.
                 or an empty list if none found.
         """
-
-        # TODO: Needs implementation
-        return []
+        substring = lambda x, y: y in x
+        return [attr_name for attr_name in self.attr if query in str(self.get_attr(attr_name))]
 
     def query_check(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> bool:
         """
@@ -75,19 +83,17 @@ class Node:
         # TODO: return operator(my value, val converted)
         return False
 
-class Edge:
+
+class Node(Attributable):
+    def __init__(self):
+        super(Node, self).__init__()
+
+
+class Edge(Attributable):
     def __init__(self, node1: Node, node2: Node):
-        self._attr = {}
+        super(Edge, self).__init__()
         self._node_from = node1
         self._node_to = node2
-
-    @property
-    def attr(self) -> Dict:
-        return self._attr
-
-    @attr.setter
-    def attr(self, newval: Dict):
-        self._attr = newval
 
     @property
     def node_from(self) -> Node:
@@ -105,28 +111,6 @@ class Edge:
     def node_to(self, newval: Node):
         self._node_to = newval
 
-    def query_check(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> bool:
-        """
-            Desc:
-                Perform attribute query on the edge.
-
-            Args:
-                attr_name: str - Name of the attribute.
-                val: str - Expected value.
-                operator: (any, any) -> (bool) - Binary operator to apply to the values.
-                    Expected values: operator.lt, operator.gt, operator.ge, operator.le, operator.eq, operator.ne
-
-            Returns:
-                True if query_check returns True for both of the nodes of this edge.
-                False othewise.
-
-            Throws:
-                NotImplementedError if the type of `val` isn't supported (see query_check).
-        """
-
-        # TODO: Needs implementation
-        return False
-
 
 class Graph:
     def __init__(self, nodes: List[Node], edges: List[Edge]):
@@ -136,6 +120,9 @@ class Graph:
     def clear(self) -> None:
         self._nodes = []
         self._edges = []
+
+    def add_node(self, v: Node):
+        self._nodes.append(v)
 
     def search(self, query: str) -> "Graph":
         """
@@ -151,9 +138,21 @@ class Graph:
                 search query.
         """
 
-        # TODO: Implementation needed.
+        if len(self._nodes) == 0:
+            raise Exception("Graph is empty")
 
-        return []
+        qualifying_nodes = list()
+        for node in self._nodes:
+            if len(node.search(query)) != 0:
+                qualifying_nodes.append(node)
+
+        qualifying_edges = list()
+        for edge in self._edges:
+            if len(edge.search(query)) != 0 and (edge.node_to in qualifying_nodes) and (edge.node_from in qualifying_nodes):
+                qualifying_edges.append(edge)
+
+        return Graph(qualifying_nodes, qualifying_edges)
+
 
     def filter(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> "Graph":
         """
@@ -196,3 +195,18 @@ class Graph:
     @edges.setter
     def edges(self, newval: List[Edge]):
         self._edges = newval
+
+
+if __name__ == '__main__':
+    a = Node()
+    a["name"] = "Perica"
+    b = Node()
+    b["name"] = "Pera"
+
+    e = Edge(a, b)
+
+    vertices = [a, b]
+    edges = [e]
+    g = Graph(vertices, edges)
+    sg = g.search("Per")
+    print(sg)
