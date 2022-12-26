@@ -65,15 +65,17 @@ def test_filter():
     graph_4_filtered = graph_1.filter("v", "5", operator.ge, True, True)
     graph_5_filtered = graph_1.filter("val", "5", operator.ge, False, True).filter("val", "5", operator.ge, True, False)
     graphs =[]
-    graphs.append(graph_5_filtered)
-    graphs.append(graph_4_filtered)
-    graphs.append(graph_3_filtered)
-    graphs.append(graph_2_filtered)
     graphs.append(graph_1_filtered)
+    graphs.append(graph_2_filtered)
+    graphs.append(graph_3_filtered)
+    graphs.append(graph_4_filtered)
+    graphs.append(graph_5_filtered)
 
     for graph in graphs:
+        print("Vertices")
         for vertex in graph.nodes:
             print(vertex.attr)
-
+        print("Edges")
         for edge in graph.edges:
             print(edge.attr)
+        print()

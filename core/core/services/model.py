@@ -73,11 +73,11 @@ class Node:
         """
         try:
             attribute = self.get_attr(attr_name)
-        except:
+        except KeyError:
             return False
         try:
             return operator(attribute, type(self.get_attr(attr_name))(val))
-        except:
+        except ValueError:
             raise NotImplementedError("value type not supported")
 
 
@@ -143,11 +143,11 @@ class Edge:
         """
         try:
             attribute = self.get_attr(attr_name)
-        except:
+        except KeyError:
             return False
         try:
             return operator(attribute, type(self.get_attr(attr_name))(val))
-        except:
+        except ValueError:
             raise NotImplementedError("value type not supported")
 
 
@@ -189,6 +189,8 @@ class Graph:
                 val: str - Expected value.
                 operator: (any, any) -> (bool) - Binary operator to apply to the values.
                     Expected values: operator.lt, operator.gt, operator.ge, operator.le, operator.eq, operator.ne
+                by_vertices: bool - Does filter apply to vertices (hanging edges will be pruned)
+                by_edges: bool - Does filter apply to edges (disconnected nodes, will remain)
 
             Returns:
                 A Graph instance whose nodes and edges all satisfy the filter.
@@ -204,39 +206,38 @@ class Graph:
         if len(self._nodes) == 0:
             return Graph([], [])
 
-        passed_vertices = self.filter_vertices(attr_name, operator, val) \
+        passed_vertices = self.__filter_vertices(attr_name, operator, val) \
             if by_vertices else self._nodes
 
         if len(passed_vertices) == 0:
             return Graph([], [])
 
-        passed_edges = self.filter_edges(attr_name, operator, passed_vertices, val) \
-            if by_edges else self.check_connecting_vertices(self._edges, passed_vertices)
+        passed_edges = self.__filter_edges(attr_name, operator, passed_vertices, val) \
+            if by_edges else self.__prune_hanging_edges(self._edges, passed_vertices)
 
         return Graph(passed_vertices, passed_edges)
 
-    def filter_edges(self, attr_name, operator, passed_vertices, val):
+    def __filter_edges(self, attr_name: str, operator: Callable[[Any, Any], bool], passed_vertices: List[Node],
+                       val: str) -> List[Edge]:
         passed_edges = []
         for edge in self._edges:
             if edge.query_check(attr_name, val, operator):
-                if operator(type(val)(edge.get_attr(attr_name)), val):
-                    passed_edges.append(edge)
+                passed_edges.append(edge)
 
-        return self.check_connecting_vertices(passed_edges, passed_vertices)
+        return self.__prune_hanging_edges(passed_edges, passed_vertices)
 
-    def check_connecting_vertices(self, edges, passed_vertices):
+    def __prune_hanging_edges(self, edges: List[Edge], passed_vertices: List[Node]) -> List[Edge]:
         passed_edges = []
         for edge in edges:
             if edge.node_to in passed_vertices and edge.node_from in passed_vertices:
                 passed_edges.append(edge)
         return passed_edges
 
-    def filter_vertices(self, attr_name, operator, val):
+    def __filter_vertices(self, attr_name: str, operator: Callable[[Any, Any], bool], val: str) -> List[Node]:
         passed_vertices = []
         for vertex in self._nodes:
             if vertex.query_check(attr_name, val, operator):
-                if operator(type(val)(vertex.get_attr(attr_name)), val):
-                    passed_vertices.append(vertex)
+                passed_vertices.append(vertex)
         return passed_vertices
 
     @property
@@ -254,37 +255,3 @@ class Graph:
     @edges.setter
     def edges(self, newval: List[Edge]):
         self._edges = newval
-
-
-if __name__ == "__main__":
-    vertices = []
-    for i in range(10):
-        vertex = Node()
-        vertex.attr = {"val": i}
-        vertices.append(vertex)
-
-    edges = []
-    for i in range(4, 7):
-        edge = Edge(vertices[i], vertices[i - 1])
-        edge.attr = {"val": i}
-        edges.append(edge)
-
-    graph_1 = Graph(vertices, edges)
-    graph_1_filtered = graph_1.filter("val", "5", operator.ge, True, True)
-    graph_2_filtered = graph_1.filter("val", "5", operator.ge, False, True)
-    graph_3_filtered = graph_1.filter("val", "5", operator.ge, True, False)
-    graph_4_filtered = graph_1.filter("v", "5", operator.ge, True, True)
-    graph_5_filtered = graph_1.filter("val", "5", operator.ge, False, True).filter("val", "5", operator.ge, True, False)
-    graphs =[]
-    graphs.append(graph_5_filtered)
-    graphs.append(graph_4_filtered)
-    graphs.append(graph_3_filtered)
-    graphs.append(graph_2_filtered)
-    graphs.append(graph_1_filtered)
-
-    for graph in graphs:
-        for vertex in graph.nodes:
-            print(vertex.attr)
-
-        for edge in graph.edges:
-            print(edge.attr)
