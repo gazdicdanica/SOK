@@ -23,6 +23,9 @@ class Attributable(object):
     def has_attr(self, attr_name: str) -> bool:
         return attr_name in self.attr
 
+    def satisfies_query(self, query: str):
+        return len(self.search(query)) != 0
+
     def get_attr(self, attr_name: str) -> Any:
         """
             Desc:
@@ -127,13 +130,15 @@ class Graph:
     def add_edge(self, e: Edge):
         self._edges.append(e)
 
-    def search(self, query: str) -> "Graph":
+    def search(self, query: str, search_nodes: bool = True, search_edges: bool = False) -> "Graph":
         """
             Desc:
                 Perform search under the whole graph.
 
             Args:
                 query: str - the text query to search for.
+                search_nodes: bool - specifies whether node attributes should satisfy query
+                search_edges: bool - specifies whether edge attributes should satisfy query
 
             Returns:
                 A subgraph (Graph) whose elements are
@@ -144,18 +149,34 @@ class Graph:
         if len(self._nodes) == 0:
             raise Exception("Graph is empty")
 
-        qualifying_nodes = list()
-        for node in self._nodes:
-            if len(node.search(query)) != 0:
-                qualifying_nodes.append(node)
+        if (search_nodes is False) and (search_edges is False):
+            return Graph(self.nodes, self.edges)
 
-        qualifying_edges = list()
-        for edge in self._edges:
-            if len(edge.search(query)) != 0 and (edge.node_to in qualifying_nodes) and (
-                    edge.node_from in qualifying_nodes):
-                qualifying_edges.append(edge)
+        qualifying_nodes = set()
+        qualifying_edges = set()
 
-        return Graph(qualifying_nodes, qualifying_edges)
+        extra_nodes = set()
+
+        if search_nodes:
+            qualifying_nodes = self._search_and_collect(query, self.nodes)
+            if not search_edges:
+                for edge in self._edges:
+                    if edge.node_to in qualifying_nodes or edge.node_from in qualifying_nodes:
+                        qualifying_edges.add(edge)
+                        extra_nodes.add(edge.node_to)
+                        extra_nodes.add(edge.node_from)
+        if search_edges:
+            qualifying_edges = self._search_and_collect(query, self.edges)
+            if not search_nodes:
+                for edge in qualifying_edges:
+                    extra_nodes.add(edge.node_to)
+                    extra_nodes.add(edge.node_from)
+
+        return Graph(list(qualifying_nodes.union(extra_nodes)), list(qualifying_edges))
+
+    @staticmethod
+    def _search_and_collect(query: str, to_search: List[Attributable]):
+        return {element for element in to_search if element.satisfies_query(query)}
 
     def filter(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> "Graph":
         """
@@ -198,3 +219,46 @@ class Graph:
     @edges.setter
     def edges(self, newval: List[Edge]):
         self._edges = newval
+
+
+def test():
+    nodes = []
+    edges = []
+    for i in range(4):
+        nodes.append(Node())
+
+    edges.append(Edge(nodes[0], nodes[1]))
+    edges.append(Edge(nodes[1], nodes[2]))
+    edges.append(Edge(nodes[2], nodes[3]))
+
+    g = Graph(nodes, edges)
+    g.nodes[0]["name"] = "Perica"
+    g.nodes[1]["name"] = "Ivica"
+    g.nodes[2]["name"] = "Per"
+
+    g.edges[0]["name"] = "per"
+    g.edges[1]["asd"] = "adw"
+
+    sg1 = g.search("per", True, True)
+    assert len(sg1.nodes) == 2
+    assert len(sg1.edges) == 1
+
+    sg2 = g.search("per", True, False)
+    assert len(sg2.nodes) == 4
+    assert len(sg2.edges) == 3
+
+    sg3 = g.search("per", False, True)
+    assert len(sg3.nodes) == 2
+    assert len(sg3.edges) == 1
+
+    sg4 = g.search("per", False, False)
+    assert len(sg4.nodes) == 4
+    assert len(sg4.edges) == 3
+
+    sg5 = g.search("ivica", True, False)
+    assert len(sg5.nodes) == 3
+    assert len(sg5.edges) == 2
+
+
+if __name__ == '__main__':
+    test()
