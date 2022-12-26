@@ -1,0 +1,9 @@
+{% if test_results %}
+    <ul>
+    {% for test_result in test_results %}
+        <li>{{ test_result }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No test results are available.</p>
+{% endif %}

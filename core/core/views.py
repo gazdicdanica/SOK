@@ -17,6 +17,12 @@ def index(request):
     return render(request, "hello_world.html")
 
 
+def tests(request):
+    results = test_search()
+    context = {"test_results": results}
+    return render(request, "tests.html", context)
+
+
 def test_graph():
     n1 = Node()
     n2 = Node()
@@ -41,3 +47,54 @@ def test_graph():
     print(len(g.edges))
     for e in g.edges:
         print(e)
+
+
+def test_search():
+    results = []
+
+    nodes = []
+    edges = []
+    for i in range(4):
+        nodes.append(Node())
+
+    edges.append(Edge(nodes[0], nodes[1]))
+    edges.append(Edge(nodes[1], nodes[2]))
+    edges.append(Edge(nodes[2], nodes[3]))
+
+    g = Graph(nodes, edges)
+    g.nodes[0]["name"] = "Perica"
+    g.nodes[1]["name"] = "Ivica"
+    g.nodes[2]["name"] = "Per"
+
+    g.edges[0]["name"] = "per"
+    g.edges[1]["asd"] = "adw"
+
+    sg = g.search("per", True, True)
+    results.append(print_case(len(sg.nodes) == 2, 1))
+    results.append(print_case(len(sg.edges) == 1, 2))
+
+    sg = g.search("per", True, False)
+    results.append(print_case(len(sg.nodes) == 4, 3))
+    results.append(print_case(len(sg.edges) == 3, 4))
+
+    sg = g.search("per", False, True)
+    results.append(print_case(len(sg.nodes) == 2, 5))
+    results.append(print_case(len(sg.edges) == 1, 6))
+
+    sg = g.search("per", False, False)
+    results.append(print_case(len(sg.nodes) == 4, 7))
+    results.append(print_case(len(sg.edges) == 3, 8))
+
+    sg = g.search("ivica", True, False)
+    results.append(print_case(len(sg.nodes) == 3, 9))
+    results.append(print_case(len(sg.edges) == 2, 10))
+    return results
+
+
+def print_case(val, serial):
+    if val:
+        return "{0} Passed\r\n".format(serial)
+    else:
+        return "{0} Failed\r\n".format(serial)
+
+
