@@ -1,3 +1,4 @@
+import operator
 from typing import List
 from django.apps.registry import apps
 from django.shortcuts import render
@@ -13,6 +14,7 @@ def index(request):
     print("Render Plugins: " + ", ".join(plugin.name() for plugin in render_plugins))
 
     test_graph()
+    test_filter()
 
     return render(request, "hello_world.html")
 
@@ -41,3 +43,37 @@ def test_graph():
     print(len(g.edges))
     for e in g.edges:
         print(e)
+
+
+def test_filter():
+    vertices = []
+    for i in range(10):
+        vertex = Node()
+        vertex.attr = {"val": i}
+        vertices.append(vertex)
+
+    edges = []
+    for i in range(4, 7):
+        edge = Edge(vertices[i], vertices[i - 1])
+        edge.attr = {"val": i}
+        edges.append(edge)
+
+    graph_1 = Graph(vertices, edges)
+    graph_1_filtered = graph_1.filter("val", "5", operator.ge, True, True)
+    graph_2_filtered = graph_1.filter("val", "5", operator.ge, False, True)
+    graph_3_filtered = graph_1.filter("val", "5", operator.ge, True, False)
+    graph_4_filtered = graph_1.filter("v", "5", operator.ge, True, True)
+    graph_5_filtered = graph_1.filter("val", "5", operator.ge, False, True).filter("val", "5", operator.ge, True, False)
+    graphs =[]
+    graphs.append(graph_5_filtered)
+    graphs.append(graph_4_filtered)
+    graphs.append(graph_3_filtered)
+    graphs.append(graph_2_filtered)
+    graphs.append(graph_1_filtered)
+
+    for graph in graphs:
+        for vertex in graph.nodes:
+            print(vertex.attr)
+
+        for edge in graph.edges:
+            print(edge.attr)

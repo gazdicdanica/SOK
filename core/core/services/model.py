@@ -72,7 +72,11 @@ class Node:
                 NotImplementedError if the type of `val` isn't supported.
         """
         try:
-            return operator(self.get_attr(attr_name), type(self.get_attr(attr_name))(val))
+            attribute = self.get_attr(attr_name)
+        except:
+            return False
+        try:
+            return operator(attribute, type(self.get_attr(attr_name))(val))
         except:
             raise NotImplementedError("value type not supported")
 
@@ -137,9 +141,12 @@ class Edge:
             Throws:
                 NotImplementedError if the type of `val` isn't supported (see query_check).
         """
-
         try:
-            return operator(self.get_attr(attr_name), type(self.get_attr(attr_name))(val))
+            attribute = self.get_attr(attr_name)
+        except:
+            return False
+        try:
+            return operator(attribute, type(self.get_attr(attr_name))(val))
         except:
             raise NotImplementedError("value type not supported")
 
@@ -171,7 +178,8 @@ class Graph:
 
         return []
 
-    def filter(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> "Graph":
+    def filter(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool], by_vertices: bool,
+               by_edges: bool) -> "Graph":
         """
             Desc:
                 Perform graph filtering using a query expression.
@@ -192,27 +200,44 @@ class Graph:
             Throws:
                 NotImplementedError if the type of `val` isn't supported (see query_check).       
         """
-        passed_vertices = []
-        passed_edges = []
 
         if len(self._nodes) == 0:
-            raise Exception("Graph is empty")
+            return Graph([], [])
 
-        for vertex in self._nodes:
-            vertex.query_check(attr_name, val, operator)
-            if operator(type(val)(vertex.get_attr(attr_name)), val):
-                passed_vertices.append(vertex)
+        passed_vertices = self.filter_vertices(attr_name, operator, val) \
+            if by_vertices else self._nodes
 
         if len(passed_vertices) == 0:
-            raise Exception("Graph is empty")
+            return Graph([], [])
 
-        for edge in self._edges:
-            edge.query_check(attr_name, val, operator)
-            if operator(type(val)(edge.get_attr(attr_name)), val):
-                if edge.node_to in passed_vertices and edge.node_from in passed_vertices:
-                    passed_edges.append(edge)
+        passed_edges = self.filter_edges(attr_name, operator, passed_vertices, val) \
+            if by_edges else self.check_connecting_vertices(self._edges, passed_vertices)
 
         return Graph(passed_vertices, passed_edges)
+
+    def filter_edges(self, attr_name, operator, passed_vertices, val):
+        passed_edges = []
+        for edge in self._edges:
+            if edge.query_check(attr_name, val, operator):
+                if operator(type(val)(edge.get_attr(attr_name)), val):
+                    passed_edges.append(edge)
+
+        return self.check_connecting_vertices(passed_edges, passed_vertices)
+
+    def check_connecting_vertices(self, edges, passed_vertices):
+        passed_edges = []
+        for edge in edges:
+            if edge.node_to in passed_vertices and edge.node_from in passed_vertices:
+                passed_edges.append(edge)
+        return passed_edges
+
+    def filter_vertices(self, attr_name, operator, val):
+        passed_vertices = []
+        for vertex in self._nodes:
+            if vertex.query_check(attr_name, val, operator):
+                if operator(type(val)(vertex.get_attr(attr_name)), val):
+                    passed_vertices.append(vertex)
+        return passed_vertices
 
     @property
     def nodes(self) -> List[Node]:
@@ -229,3 +254,37 @@ class Graph:
     @edges.setter
     def edges(self, newval: List[Edge]):
         self._edges = newval
+
+
+if __name__ == "__main__":
+    vertices = []
+    for i in range(10):
+        vertex = Node()
+        vertex.attr = {"val": i}
+        vertices.append(vertex)
+
+    edges = []
+    for i in range(4, 7):
+        edge = Edge(vertices[i], vertices[i - 1])
+        edge.attr = {"val": i}
+        edges.append(edge)
+
+    graph_1 = Graph(vertices, edges)
+    graph_1_filtered = graph_1.filter("val", "5", operator.ge, True, True)
+    graph_2_filtered = graph_1.filter("val", "5", operator.ge, False, True)
+    graph_3_filtered = graph_1.filter("val", "5", operator.ge, True, False)
+    graph_4_filtered = graph_1.filter("v", "5", operator.ge, True, True)
+    graph_5_filtered = graph_1.filter("val", "5", operator.ge, False, True).filter("val", "5", operator.ge, True, False)
+    graphs =[]
+    graphs.append(graph_5_filtered)
+    graphs.append(graph_4_filtered)
+    graphs.append(graph_3_filtered)
+    graphs.append(graph_2_filtered)
+    graphs.append(graph_1_filtered)
+
+    for graph in graphs:
+        for vertex in graph.nodes:
+            print(vertex.attr)
+
+        for edge in graph.edges:
+            print(edge.attr)
