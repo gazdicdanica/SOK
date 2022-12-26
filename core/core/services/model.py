@@ -1,8 +1,10 @@
+import operator
 from typing import List, Dict, Any, Callable, Tuple
 from operator import lt, le, gt, ge, eq, ne
 
 ATTR_ID = "__id"
 ATTR_REF = "__ref"
+
 
 class Node:
     def __init__(self):
@@ -69,11 +71,15 @@ class Node:
             Throws:
                 NotImplementedError if the type of `val` isn't supported.
         """
+        try:
+            attribute = self.get_attr(attr_name)
+        except KeyError:
+            return False
+        try:
+            return operator(attribute, type(self.get_attr(attr_name))(val))
+        except ValueError:
+            raise NotImplementedError("value type not supported")
 
-        # TODO: Needs implementation
-        # TODO: Manual conversion after get_attr (int, float, bool, str)
-        # TODO: return operator(my value, val converted)
-        return False
 
 class Edge:
     def __init__(self, node1: Node, node2: Node):
@@ -105,6 +111,18 @@ class Edge:
     def node_to(self, newval: Node):
         self._node_to = newval
 
+    def get_attr(self, attr_name: str) -> Any:
+        """
+            Desc:
+                Returns the attribute of this node.
+                Shorthand for attr[attr_name].
+
+            Note:
+                This function does not perform an existence check.
+                on the specified attribute.
+        """
+        return self.attr[attr_name]
+
     def query_check(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> bool:
         """
             Desc:
@@ -123,9 +141,14 @@ class Edge:
             Throws:
                 NotImplementedError if the type of `val` isn't supported (see query_check).
         """
-
-        # TODO: Needs implementation
-        return False
+        try:
+            attribute = self.get_attr(attr_name)
+        except KeyError:
+            return False
+        try:
+            return operator(attribute, type(self.get_attr(attr_name))(val))
+        except ValueError:
+            raise NotImplementedError("value type not supported")
 
 
 class Graph:
@@ -155,7 +178,8 @@ class Graph:
 
         return []
 
-    def filter(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool]) -> "Graph":
+    def filter(self, attr_name: str, val: str, operator: Callable[[Any, Any], bool], by_vertices: bool,
+               by_edges: bool) -> "Graph":
         """
             Desc:
                 Perform graph filtering using a query expression.
@@ -165,6 +189,8 @@ class Graph:
                 val: str - Expected value.
                 operator: (any, any) -> (bool) - Binary operator to apply to the values.
                     Expected values: operator.lt, operator.gt, operator.ge, operator.le, operator.eq, operator.ne
+                by_vertices: bool - Does filter apply to vertices (hanging edges will be pruned)
+                by_edges: bool - Does filter apply to edges (disconnected nodes, will remain)
 
             Returns:
                 A Graph instance whose nodes and edges all satisfy the filter.
@@ -177,10 +203,43 @@ class Graph:
                 NotImplementedError if the type of `val` isn't supported (see query_check).       
         """
 
-        # TODO: Implementation needed.
+        if len(self._nodes) == 0:
+            return Graph([], [])
 
-        return Graph()
-    
+        passed_vertices = self.__filter_vertices(attr_name, operator, val) \
+            if by_vertices else self._nodes
+
+        if len(passed_vertices) == 0:
+            return Graph([], [])
+
+        passed_edges = self.__filter_edges(attr_name, operator, passed_vertices, val) \
+            if by_edges else self.__prune_hanging_edges(self._edges, passed_vertices)
+
+        return Graph(passed_vertices, passed_edges)
+
+    def __filter_edges(self, attr_name: str, operator: Callable[[Any, Any], bool], passed_vertices: List[Node],
+                       val: str) -> List[Edge]:
+        passed_edges = []
+        for edge in self._edges:
+            if edge.query_check(attr_name, val, operator):
+                passed_edges.append(edge)
+
+        return self.__prune_hanging_edges(passed_edges, passed_vertices)
+
+    def __prune_hanging_edges(self, edges: List[Edge], passed_vertices: List[Node]) -> List[Edge]:
+        passed_edges = []
+        for edge in edges:
+            if edge.node_to in passed_vertices and edge.node_from in passed_vertices:
+                passed_edges.append(edge)
+        return passed_edges
+
+    def __filter_vertices(self, attr_name: str, operator: Callable[[Any, Any], bool], val: str) -> List[Node]:
+        passed_vertices = []
+        for vertex in self._nodes:
+            if vertex.query_check(attr_name, val, operator):
+                passed_vertices.append(vertex)
+        return passed_vertices
+
     @property
     def nodes(self) -> List[Node]:
         return self._nodes
