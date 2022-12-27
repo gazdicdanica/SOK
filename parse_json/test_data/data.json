@@ -2,55 +2,55 @@
     "name": "ROOT",
     "data":[
         {
-            "id":"1",
+            "__id":"1",
             "name":"cvor1",
             "miniNodes":[
                 {
-                    "id":"5",
+                    "__id":"5",
                     "timestamp": "12:40:34",
                     "name":"miniCvor1",
-                    "referenceList":["1","6", "7"]
+                    "__ref":["1","6", "7"]
                 }
             ]
         },
         {
-            "id":"2",
+            "__id":"2",
             "name":"cvor2"
         },
         {
-            "id":"3",
+            "__id":"3",
             "name":"cvor3",
             "miniNodes":[
                 {
-                    "id":"6",
+                    "__id":"6",
                     "date": "01-01-2000",
                     "name":"miniCvor2",
-                    "referenceList":["4"],
+                    "__ref":["4"],
                     "randomInfo": ["info1", "info2"]
                 },
                 {
-                    "id":"7",
+                    "__id":"7",
                     "name":"miniCvor3",
                     "timestamp": "10:30:10",
                     "miniMiniNodes":[
                         {
-                            "id":"9",
+                            "__id":"9",
                             "name":"miniMiniCvor1",
-                            "referenceList":["3"]
+                            "__ref":["3"]
                         }
                     ]
                 }
             ]
         },
         {
-            "id":"4",
+            "__id":"4",
             "name":"cvor4",
             "date": "01-01-2001",
             "miniNodes":[
                 {
-                    "id":"8",
+                    "__id":"8",
                     "name":"miniCvor4",
-                    "referenceList":["1", "3"]
+                    "__ref":["1", "3"]
                 }
             ]
         }
