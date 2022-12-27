@@ -12,15 +12,21 @@ class YAMLParser(DataParserBase):
         return "YAMLParser"
 
 
-    def parse(self, data: str) -> None:
-        return None
+    def parse(self, data: str) -> Graph:
+        dataMap = yaml.safe_load(data)
+        graph = Graph([], [])
+
+        self.processParsedData(dataMap, None, graph)
+
+        return graph
 
 
-    def parseFile(self, fname: str) -> dict:
+    def parseFile(self, fname: str) -> None:
         print(fname)
         with open(fname, 'r') as file:
-            dataMap = yaml.safe_load(file)
-        return dataMap
+            data = file.read()
+        self.parse(data)
+            
 
 
     def processParsedData(self, data, parent_node: Node, graph: Graph):
@@ -47,11 +53,20 @@ class YAMLParser(DataParserBase):
 
     def connectByRef(self, graph: Graph, node: Node, references):
         for ref in references:
+            referenceNode = None
             for n in graph.nodes:
+                # is the node already added to graph?
                 if n.get_attr(ATTR_ID) == ref[ATTR_ID]:
-                    edge = Edge(node, n)
-                    graph.edges.append(edge)
-
+                    referenceNode = n
+                    break
+            # generate new node if it isn't
+            if referenceNode is None:
+                referenceNode = Node()
+                referenceNode.attr[ATTR_ID] = ref[ATTR_ID]
+                graph.nodes.append(referenceNode)
+            
+            edge = Edge(node, referenceNode)
+            graph.edges.append(edge)
 
 
     def connectNodes(self, graph: Graph, child_node: Node, parent_node: Node):
@@ -59,15 +74,14 @@ class YAMLParser(DataParserBase):
             edge = Edge(parent_node, child_node)
             graph.edges.append(edge)
 
-        graph.nodes.append(child_node)
 
+        if child_node.has_attr(ATTR_ID):
+            li = [x for x in graph.nodes if x.get_attr(ATTR_ID) == child_node.get_attr(ATTR_ID)]
+            if li:
+               for key in child_node.attr:
+                li[0].attr[key] = child_node.attr[key]
+            else:
+                graph.nodes.append(child_node)
+        else: 
+            graph.nodes.append(child_node)
 
-    def generateGraph(self) -> Graph:
-        graph = Graph([], [])
-
-        data = self.parseFile("./data/test.yml")
-
-        data = self.parseFile("./data/cyclic_graph.yml")
-
-        self.processParsedData(data, None, graph)
-      
