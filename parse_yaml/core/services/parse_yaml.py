@@ -13,63 +13,63 @@ class YAMLParser(DataParserBase):
 
 
     def parse(self, data: str) -> Graph:
-        dataMap = yaml.safe_load(data)
+        data_map = yaml.safe_load(data)
         graph = Graph([], [])
 
-        self.processParsedData(dataMap, None, graph)
+        self._processParsedData(data_map, None, graph)
 
         return graph
 
 
-    def parseFile(self, fname: str) -> None:
+    def parseFile(self, fname: str) -> Graph:
         print(fname)
         with open(fname, 'r') as file:
             data = file.read()
-        self.parse(data)
+        return self.parse(data)
             
 
 
-    def processParsedData(self, data, parent_node: Node, graph: Graph):
+    def _processParsedData(self, data, parent_node: Node, graph: Graph):
         node = Node()
         for key in data:
             if type(data[key]) is list:
                 if key != ATTR_REF:
-                    if(all(type(n) is dict for n in data[key])):
+                    if all(type(n) is dict for n in data[key]):
                         for child_node in data[key]:
-                            self.processParsedData(child_node, node, graph)
+                            self._processParsedData(child_node, node, graph)
                     else:
                         node.attr[key] = data[key]
             elif type(data[key]) is dict:
-                self.processParsedData(data[key], node, graph)
+                self._processParsedData(data[key], node, graph)
             else:
                 node.attr[key] = data[key]
 
         # connecting children to parent node
-        self.connectNodes(graph, node, parent_node)
+        self._connectNodes(graph, node, parent_node)
 
         if ATTR_REF in data:
-            self.connectByRef(graph, node, data[ATTR_REF])
+            self._connectByRef(graph, node, data[ATTR_REF])
         
 
-    def connectByRef(self, graph: Graph, node: Node, references):
+    def _connectByRef(self, graph: Graph, node: Node, references):
         for ref in references:
-            referenceNode = None
+            reference_node = None
             for n in graph.nodes:
                 # is the node already added to graph?
                 if n.get_attr(ATTR_ID) == ref[ATTR_ID]:
-                    referenceNode = n
+                    reference_node = n
                     break
             # generate new node if it isn't
-            if referenceNode is None:
-                referenceNode = Node()
-                referenceNode.attr[ATTR_ID] = ref[ATTR_ID]
-                graph.nodes.append(referenceNode)
+            if reference_node is None:
+                reference_node = Node()
+                reference_node.attr[ATTR_ID] = ref[ATTR_ID]
+                graph.nodes.append(reference_node)
             
-            edge = Edge(node, referenceNode)
+            edge = Edge(node, reference_node)
             graph.edges.append(edge)
 
 
-    def connectNodes(self, graph: Graph, child_node: Node, parent_node: Node):
+    def _connectNodes(self, graph: Graph, child_node: Node, parent_node: Node):
         if parent_node:
             edge = Edge(parent_node, child_node)
             graph.edges.append(edge)
@@ -84,4 +84,3 @@ class YAMLParser(DataParserBase):
                 graph.nodes.append(child_node)
         else: 
             graph.nodes.append(child_node)
-
