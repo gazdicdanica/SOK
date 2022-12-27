@@ -1,11 +1,12 @@
 from typing import List, Dict, Any, Callable, Tuple
 from operator import lt, le, gt, ge, eq, ne
+from abc import ABC
 
 ATTR_ID = "__id"
 ATTR_REF = "__ref"
 
 
-class Attributable(object):
+class Attributable(ABC):
     def __init__(self):
         self._attr = {}
 
