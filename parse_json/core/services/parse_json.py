@@ -78,16 +78,3 @@ class JSONParser(DataParserBase):
                 graph.nodes.append(node)
         else:
             graph.nodes.append(node)
-
-
-if __name__ == '__main__':
-    parse_json = JSONParser()
-    graph = parse_json.parseFile("../../test_data/data.json")
-    print("TEST1:")
-    for e in graph.edges:
-        print(str(e.node_from.attr) + " -> " + str(e.node_to.attr))
-
-    print("\nTEST2:")
-    graph = parse_json.parseFile("../../test_data/data1.json")
-    for e in graph.edges:
-        print(str(e.node_from.attr) + " -> " + str(e.node_to.attr))
