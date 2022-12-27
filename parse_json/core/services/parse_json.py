@@ -2,7 +2,7 @@ import json
 
 from core.services.parse import DataParserBase
 
-from core.core.services.model import *
+from core.services.model import *
 
 
 def loadData(fname: str):
@@ -22,12 +22,16 @@ class JSONParser(DataParserBase):
     def parse(self, data: str) -> Graph:
         graph = Graph([], [])
 
-        self._processParsedData(data, graph)
+        self._processParsedData(json.loads(data), graph)
 
         return graph
 
     def parseFile(self, fname: str) -> Graph:
-        return self.parse(loadData(fname))
+        graph = Graph([], [])
+
+        self._processParsedData(loadData(fname), graph)
+
+        return graph
 
     def _processParsedData(self, data, graph: Graph, parent_node: Node = None):
         node = Node()
