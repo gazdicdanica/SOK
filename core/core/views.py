@@ -4,7 +4,6 @@ from django.shortcuts import render
 
 from .services.parse import DataParserBase
 from .services.model import Node, Edge, Graph, ATTR_ID
-from parse_json.core.services.parse_json import JSONParser
 
 
 def index(request):
@@ -14,6 +13,10 @@ def index(request):
     print("Render Plugins: " + ", ".join(plugin.name() for plugin in render_plugins))
 
     test_graph()
+
+    for parse_plugin in parse_plugins:
+        if parse_plugin.name() == "JSONParser":
+            test_JSON_parse(parse_plugin)
 
     return render(request, "hello_world.html")
 
@@ -104,7 +107,6 @@ def test_JSON_parse(parser: DataParserBase):
     ]
 }
     """
-    parser = JSONParser()
     graph = parser.parse(test_string)
 
     for n in graph.nodes:
