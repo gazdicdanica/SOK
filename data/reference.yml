@@ -1,0 +1,44 @@
+---
+name: ROOT
+data:
+- &cvor1
+  __id: '1'
+  name: cvor1
+  miniNodes:
+  - __id: '5'
+    timestamp: '12:40:34'
+    name: miniCvor1
+    __ref:
+    - *cvor1
+- __id: '2'
+  name: cvor2
+- &cvor3
+  __id: '3'
+  name: cvor3
+  miniNodes:
+  - &cvor6
+    __id: '6'
+    date: 01-01-2000
+    name: miniCvor2
+    randomInfo:
+    - info1
+    - info2
+  - __id: '7'
+    name: miniCvor3
+    timestamp: '10:30:10'
+    miniMiniNodes:
+    - __id: '9'
+      name: miniMiniCvor1
+      __ref:
+      - *cvor3
+- __id: '4'
+  name: cvor4
+  date: 01-01-2001
+  miniNodes:
+  - __id: '8'
+    name: miniCvor4
+    __ref:
+    - *cvor1
+    - *cvor3
+  __ref:
+  - *cvor6
