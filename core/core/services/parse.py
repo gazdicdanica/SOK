@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from model import *
+from .model import *
 # TODO: parse should return graph type.
 
 class DataParserBase(ABC):
